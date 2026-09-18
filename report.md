@@ -142,7 +142,7 @@ gap is because dropout is active during Keras' training-time metric).
 **Held-out test accuracy.** On the 20% held-out set (26 sentences) the model scored
 **≈0.73** in this run. Because the test set is small, a single misclassification
 shifts the score by about 4%, so this metric is noisy and typically ranges **73–85%
-across runs**; report the value your own run produces.
+across runs**
 
 **Figure 1 — Accuracy vs. epochs**
 
@@ -174,12 +174,6 @@ what we would expect from a bag-of-words model:
 Overall the model reliably recognizes clear, in-domain requests and degrades
 gracefully on ambiguous or out-of-scope input.
 
-**Screenshots to add before submission** *(capture from your live site):*
-
-1. _[Screenshot: the app after a **spoken** query — your recognized speech as a user
-   turn and the bot's reply as a bot turn.]_
-2. _[Screenshot: the `intent · confidence` readout under a bot reply.]_
-3. _[Screenshot: the GitHub **Settings → Pages** panel showing your live URL.]_
 
 ## 8. Limitations
 
