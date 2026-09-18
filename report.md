@@ -3,12 +3,9 @@
 
 | | |
 |---|---|
-| **Name** | _<your name>_ |
-| **Reg. No.** | _<your registration number>_ |
-| **Course** | _<course code / title>_ |
+| **Name** | A R Nitesh Kumar |
 | **Live application** | https://arniteshkumar.github.io/voice-chatbot/ |
 | **Source code** | https://github.com/arniteshkumar/voice-chatbot |
-| **Date** | _<submission date>_ |
 
 ---
 
