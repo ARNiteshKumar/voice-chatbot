@@ -9,7 +9,7 @@
 
 'use strict';
 
-const MODEL_VERSION = 'v1';                 // bump to force a retrain
+const MODEL_VERSION = 'v2';                 // bump to force a retrain
 const MODEL_KEY = `indexeddb://voicebot-${MODEL_VERSION}`;
 const CONFIDENCE_THRESHOLD = 0.55;          // below this -> fallback reply
 
@@ -79,10 +79,10 @@ function bagOfWords(tokens) {
 /* ---------------------------------------------------------------- model */
 function buildModel(inputSize, numClasses) {
   const m = tf.sequential();
-  m.add(tf.layers.dense({ inputShape: [inputSize], units: 16, activation: 'relu' }));
-  m.add(tf.layers.dropout({ rate: 0.3 }));
-  m.add(tf.layers.dense({ units: 16, activation: 'relu' }));
-  m.add(tf.layers.dropout({ rate: 0.3 }));
+  m.add(tf.layers.dense({ inputShape: [inputSize], units: 24, activation: 'relu' }));
+  m.add(tf.layers.dropout({ rate: 0.2 }));
+  m.add(tf.layers.dense({ units: 24, activation: 'relu' }));
+  m.add(tf.layers.dropout({ rate: 0.2 }));
   m.add(tf.layers.dense({ units: numClasses, activation: 'softmax' }));
   m.compile({
     optimizer: tf.train.adam(0.01),
@@ -95,27 +95,35 @@ function buildModel(inputSize, numClasses) {
 async function trainModel(trainTokens, trainLabels) {
   const xs = tf.tensor2d(trainTokens.map(bagOfWords));
   const ys = tf.oneHot(tf.tensor1d(trainLabels, 'int32'), classes.length);
-
   const m = buildModel(vocab.length, classes.length);
-  await m.fit(xs, ys, {
-    epochs: 250,
-    batchSize: 8,
-    shuffle: true,
-    verbose: 0,
+
+  // clean argmax accuracy on the training set (dropout is off during predict)
+  const evalAcc = () => tf.tidy(() => {
+    const preds = m.predict(xs).argMax(1).dataSync();
+    let c = 0;
+    for (let i = 0; i < preds.length; i++) if (preds[i] === trainLabels[i]) c++;
+    return c / preds.length;
   });
 
-  // report a clean argmax accuracy (dropout off during predict)
-  const preds = m.predict(xs).argMax(1).dataSync();
-  let correct = 0;
-  for (let i = 0; i < preds.length; i++) if (preds[i] === trainLabels[i]) correct++;
-  const acc = correct / preds.length;
+  await m.fit(xs, ys, { epochs: 300, batchSize: 8, shuffle: true, verbose: 0 });
+  let acc = evalAcc();
+
+  // safeguard: keep training if an unlucky start left it under-fit
+  let rounds = 0;
+  while (acc < 0.95 && rounds < 3) {
+    await m.fit(xs, ys, { epochs: 150, batchSize: 8, shuffle: true, verbose: 0 });
+    acc = evalAcc();
+    rounds++;
+  }
 
   xs.dispose(); ys.dispose();
   return { model: m, acc };
 }
 
 async function classify(text) {
-  const vec = bagOfWords(tokenize(text));
+  const tokens = tokenize(text);
+  const vec = bagOfWords(tokens);
+  const knownWords = vec.reduce((a, b) => a + b, 0); // how many words the model knows
   const input = tf.tensor2d([vec]);
   const output = model.predict(input);
   const probs = await output.data();
@@ -123,7 +131,7 @@ async function classify(text) {
 
   let best = 0;
   for (let i = 1; i < probs.length; i++) if (probs[i] > probs[best]) best = i;
-  return { tag: classes[best], confidence: probs[best] };
+  return { tag: classes[best], confidence: probs[best], knownWords };
 }
 
 /* ---------------------------------------------------------- responses */
@@ -182,14 +190,15 @@ async function handleUserText(text) {
   if (!clean) return;
   addTurn('user', clean);
 
-  const { tag, confidence } = await classify(clean);
+  const { tag, confidence, knownWords } = await classify(clean);
   const pct = Math.round(confidence * 100);
-  const low = confidence < CONFIDENCE_THRESHOLD;
-  const reply = low ? pick(FALLBACKS) : responseFor(tag);
+  // uncertain if: no recognised words at all, or low confidence
+  const uncertain = knownWords === 0 || confidence < CONFIDENCE_THRESHOLD;
+  const reply = uncertain ? pick(FALLBACKS) : responseFor(tag);
 
   addTurn('bot', reply, {
-    html: `intent <b>${low ? 'uncertain' : tag}</b> · ${pct}%`,
-    low,
+    html: `intent <b>${uncertain ? 'uncertain' : tag}</b> · ${pct}%`,
+    low: uncertain,
   });
   speak(reply);
 }

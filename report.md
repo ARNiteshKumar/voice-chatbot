@@ -49,14 +49,14 @@ TensorFlow.js:
 | Layer | Units | Activation | Notes |
 |------:|:-----:|:----------:|-------|
 | Input | vocab size | – | binary bag-of-words vector |
-| Dense | 16 | ReLU | |
-| Dropout | – | – | rate 0.3 (regularization) |
-| Dense | 16 | ReLU | |
-| Dropout | – | – | rate 0.3 |
+| Dense | 24 | ReLU | |
+| Dropout | – | – | rate 0.2 (regularization) |
+| Dense | 24 | ReLU | |
+| Dropout | – | – | rate 0.2 |
 | Output | num intents | Softmax | probability per intent |
 
 - **Loss:** categorical cross-entropy **Optimizer:** Adam (lr = 0.01)
-- **Epochs:** 250 **Batch size:** 8
+- **Epochs:** 300 (with a retrain safeguard) **Batch size:** 8
 
 **Text-to-speech:** `SpeechSynthesis` reads the reply aloud (toggleable).
 
@@ -65,12 +65,13 @@ TensorFlow.js:
 The dataset (`intents.json`) is a set of **intents**. Each intent has a `tag`, a
 list of example `patterns` (training sentences), and a list of `responses`.
 
-- **Intents (classes):** _<fill: run the app, see the "intents" readout — e.g. 12>_
-- **Training sentences (samples):** _<fill: the "samples" readout — e.g. 95>_
-- **Vocabulary size:** _<fill: the "vocab" readout — e.g. 111>_
+- **Intents (classes):** _<fill: run the app, see the "intents" readout — e.g. 13>_
+- **Training sentences (samples):** _<fill: the "samples" readout — e.g. 126>_
+- **Vocabulary size:** _<fill: the "vocab" readout — e.g. 156>_
 
 Example intents: greeting, goodbye, thanks, about_bot, creator, help, time, date,
-weather, joke, identity_project, mood. _(Describe a couple of intents and give
+weather, joke, identity_project, mood, and an `unknown` (out-of-scope) intent.
+_(Describe a couple of intents and give
 example patterns/responses.)_
 
 ## 5. Methodology
@@ -85,7 +86,10 @@ example patterns/responses.)_
 4. **Inference + confidence.** At runtime, the recognized text is vectorized the
    same way and passed through the network. The highest softmax probability gives
    the predicted intent and a confidence score. If confidence < 0.55, the bot
-   returns a fallback message rather than guessing.
+   returns a fallback message rather than guessing. In addition, an explicit
+   `unknown` intent is trained on common out-of-scope questions so off-topic
+   queries route to a polite decline, and any sentence with no recognised words
+   also triggers the fallback.
 5. **Response generation.** A response is sampled from the predicted intent's
    `responses`. `time`/`date` intents are answered dynamically.
 
@@ -100,7 +104,7 @@ loads. _(See README for exact deployment steps. Insert your live URL here.)_
 
 _Generate the figures with `train_report.py` (see README / Colab) and insert them._
 
-- **Training accuracy:** _<e.g. 100%>_ **Final loss:** _<e.g. 0.12>_
+- **Training accuracy:** _<e.g. 100%>_ **Final loss:** _<e.g. 0.05>_
 - **Test/validation accuracy:** _<from train_report.py>_
 
 **Figures to include:**

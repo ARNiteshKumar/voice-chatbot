@@ -13,7 +13,10 @@
         "is anyone there",
         "howdy",
         "what's up",
-        "hi there"
+        "hi there",
+        "yo",
+        "hi bot",
+        "hey bot"
       ],
       "responses": [
         "Hello! I'm your voice assistant. How can I help you today?",
@@ -105,7 +108,10 @@
         "how does this work",
         "how do i use this",
         "guide me",
-        "i am stuck"
+        "i am stuck",
+        "what can you help with",
+        "i have a question",
+        "what can you do for me"
       ],
       "responses": [
         "Sure! Tap the microphone and speak, or type your message in the box. I'll recognize your speech and reply. Try asking about the time, weather, or a joke.",
@@ -164,7 +170,12 @@
         "say something funny",
         "do you know any jokes",
         "another joke",
-        "cheer me up"
+        "cheer me up",
+        "tell me another joke",
+        "got any jokes",
+        "i want to laugh",
+        "say a funny joke",
+        "tell me something funny"
       ],
       "responses": [
         "Why did the neural network go to therapy? It had too many deep issues.",
@@ -203,6 +214,36 @@
       "responses": [
         "I'm running smoothly, thanks for asking! How are you?",
         "All systems go! What can I do for you?"
+      ]
+    },
+    {
+      "tag": "unknown",
+      "patterns": [
+        "tell me a recipe",
+        "give me a recipe",
+        "how do i cook pasta",
+        "how to make biryani",
+        "recipe for chocolate cake",
+        "what is the cricket score",
+        "who won the match today",
+        "what is the latest news",
+        "what is two plus two",
+        "solve this math problem",
+        "translate this to tamil",
+        "say something in hindi",
+        "what is the capital of france",
+        "who is the prime minister",
+        "book a cab for me",
+        "order a pizza",
+        "give me directions to the airport",
+        "play a song",
+        "tell me a story",
+        "what is bitcoin price"
+      ],
+      "responses": [
+        "That's outside what I was trained on. I can say hello, tell jokes, and give the time and date \u2014 try one of those!",
+        "I'm a small demo chatbot and don't know that one yet. Ask me for a joke, the time, or the date.",
+        "Sorry, that's beyond my current skills. Try asking me to tell a joke or give the time."
       ]
     }
   ]

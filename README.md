@@ -119,14 +119,16 @@ vector is fed to a neural network:
 
 ```
 Input (vocab size)
-  → Dense(16, ReLU) → Dropout(0.3)
-  → Dense(16, ReLU) → Dropout(0.3)
+  → Dense(24, ReLU) → Dropout(0.2)
+  → Dense(24, ReLU) → Dropout(0.2)
   → Dense(num_intents, Softmax)
 ```
 
 The softmax output is a probability per intent. The highest one is the predicted
-intent; if its confidence is below a threshold (0.55) the bot gives a graceful
-fallback instead of guessing.
+intent; if its confidence is below a threshold (0.55) — or the sentence contains
+no words the model knows — the bot gives a graceful fallback instead of guessing.
+An explicit `unknown` intent, trained on common out-of-scope questions (recipes,
+sports scores, math, etc.), routes off-topic queries to a polite decline.
 
 **3. Intent → response.** A response is chosen from that intent's `responses`
 list. Two special tags, `time` and `date`, are answered dynamically.
