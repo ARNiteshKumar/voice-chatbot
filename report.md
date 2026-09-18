@@ -1,28 +1,33 @@
 # Voice-Enabled Chatbot using Speech Recognition and Deep Learning
 ### Project Report
 
-**Name:** _<your name>_  **Reg. No.:** _<your reg no>_  **Course:** _<course code>_
-**Live link:** _<your GitHub Pages URL>_  **Source code:** _<your GitHub repo URL>_
-**Date:** _<submission date>_
+| | |
+|---|---|
+| **Name** | _<your name>_ |
+| **Reg. No.** | _<your registration number>_ |
+| **Course** | _<course code / title>_ |
+| **Live application** | https://arniteshkumar.github.io/voice-chatbot/ |
+| **Source code** | https://github.com/arniteshkumar/voice-chatbot |
+| **Date** | _<submission date>_ |
 
 ---
 
 ## 1. Abstract
 
-This project implements and deploys an online voice-enabled chatbot. The system
+This project implements and deploys an online **voice-enabled chatbot**. The system
 captures the user's voice, transcribes it to text using browser-based speech
 recognition, classifies the user's **intent** with a deep learning model
-(a feed-forward neural network), and returns an appropriate response, which it can
-also speak aloud. Both the recognized speech and the chatbot's reply are displayed,
-along with the predicted intent and the model's confidence. The application runs
-fully client-side and is deployed on GitHub Pages, making it free and always
-available.
+(a feed-forward neural network built in TensorFlow.js), and returns an appropriate
+response, which it can also speak aloud. Both the recognized speech and the
+chatbot's reply are displayed, together with the predicted intent and the model's
+confidence score. The application runs entirely client-side and is deployed on
+GitHub Pages, so it is free to run and always available at a public link.
 
 ## 2. Objectives
 
 - Integrate speech recognition to accept voice input.
-- Build a deep learning model for intent classification.
-- Generate and display appropriate responses to recognized speech.
+- Build and train a deep learning model for intent classification.
+- Generate and display appropriate responses to the recognized speech.
 - Deploy a publicly accessible web application and provide a live link.
 
 ## 3. System Architecture
@@ -40,106 +45,174 @@ available.
  └──────────┘          └──────────────────┘         └──────────────────────────┘
 ```
 
-**Speech recognition:** The Web Speech API's `SpeechRecognition` transcribes audio
-in real time, entirely in the browser (no audio leaves the device).
+**Speech recognition.** The Web Speech API's `SpeechRecognition` transcribes audio
+in real time, entirely in the browser — no audio is uploaded to any server.
 
-**Deep learning model:** A bag-of-words feed-forward neural network implemented in
+**Deep learning model.** A bag-of-words feed-forward neural network implemented in
 TensorFlow.js:
 
 | Layer | Units | Activation | Notes |
 |------:|:-----:|:----------:|-------|
-| Input | vocab size | – | binary bag-of-words vector |
+| Input | 156 (vocab size) | – | binary bag-of-words vector |
 | Dense | 24 | ReLU | |
 | Dropout | – | – | rate 0.2 (regularization) |
 | Dense | 24 | ReLU | |
 | Dropout | – | – | rate 0.2 |
-| Output | num intents | Softmax | probability per intent |
+| Output | 13 (intents) | Softmax | probability per intent |
 
-- **Loss:** categorical cross-entropy **Optimizer:** Adam (lr = 0.01)
-- **Epochs:** 300 (with a retrain safeguard) **Batch size:** 8
+- **Loss:** categorical cross-entropy   **Optimizer:** Adam (learning rate 0.01)
+- **Epochs:** 300 (with a safeguard that keeps training if the model is under-fit)
+- **Batch size:** 8   **Trainable parameters:** 4,693
 
-**Text-to-speech:** `SpeechSynthesis` reads the reply aloud (toggleable).
+**Text-to-speech.** The reply is read aloud with `SpeechSynthesis` (toggleable).
 
 ## 4. Dataset
 
 The dataset (`intents.json`) is a set of **intents**. Each intent has a `tag`, a
 list of example `patterns` (training sentences), and a list of `responses`.
 
-- **Intents (classes):** _<fill: run the app, see the "intents" readout — e.g. 13>_
-- **Training sentences (samples):** _<fill: the "samples" readout — e.g. 126>_
-- **Vocabulary size:** _<fill: the "vocab" readout — e.g. 156>_
+- **Intents (classes):** 13
+- **Training sentences (samples):** 126
+- **Vocabulary size:** 156 unique words
 
-Example intents: greeting, goodbye, thanks, about_bot, creator, help, time, date,
-weather, joke, identity_project, mood, and an `unknown` (out-of-scope) intent.
-_(Describe a couple of intents and give
-example patterns/responses.)_
+The 13 intents are: `greeting`, `goodbye`, `thanks`, `about_bot`, `creator`,
+`help`, `time`, `date`, `weather`, `joke`, `identity_project`, `mood`, and
+`unknown`. The `unknown` intent is an **out-of-scope class**, trained on questions
+the bot is *not* meant to answer (recipes, sports scores, arithmetic, etc.), so that
+off-topic input is routed to a polite decline instead of a confident wrong answer.
+
+**Example intents:**
+
+```jsonc
+{
+  "tag": "greeting",
+  "patterns": ["hi", "hello", "good morning", "is anyone there", "hey bot"],
+  "responses": ["Hello! I'm your voice assistant. How can I help you today?"]
+}
+{
+  "tag": "time",
+  "patterns": ["what time is it", "tell me the time", "current time"],
+  "responses": ["__TIME__"]      // answered dynamically from the device clock
+}
+{
+  "tag": "unknown",
+  "patterns": ["tell me a recipe", "what is the cricket score", "play a song"],
+  "responses": ["That's outside what I was trained on. I can say hello, tell jokes, and give the time and date."]
+}
+```
 
 ## 5. Methodology
 
 1. **Pre-processing.** Each sentence is lowercased, stripped of punctuation, and
-   tokenized. A vocabulary is built from all training tokens (sorted for
-   determinism). Every sentence becomes a binary **bag-of-words** vector: position
-   *i* is 1 if vocabulary word *i* is present.
-2. **Labels.** Each intent tag is one-hot encoded.
-3. **Training.** The network is trained with the settings in §3. Dropout reduces
-   overfitting on the small dataset.
-4. **Inference + confidence.** At runtime, the recognized text is vectorized the
+   tokenized into words. A vocabulary is built from all training tokens (sorted for
+   determinism). Every sentence is converted into a binary **bag-of-words** vector:
+   element *i* is 1 if vocabulary word *i* is present in the sentence, else 0.
+2. **Labels.** Each intent tag is one-hot encoded across the 13 classes.
+3. **Training.** The network (§3) is trained with categorical cross-entropy and the
+   Adam optimizer. Dropout (0.2) reduces overfitting on the small dataset, and a
+   safeguard continues training if the training accuracy has not converged.
+4. **Inference and confidence.** At runtime the recognized text is vectorized the
    same way and passed through the network. The highest softmax probability gives
-   the predicted intent and a confidence score. If confidence < 0.55, the bot
-   returns a fallback message rather than guessing. In addition, an explicit
-   `unknown` intent is trained on common out-of-scope questions so off-topic
-   queries route to a polite decline, and any sentence with no recognised words
-   also triggers the fallback.
+   the predicted intent and its confidence. The bot falls back to a safe reply when
+   **either** the confidence is below **0.55** **or** the sentence contains no words
+   the model knows. Off-topic questions additionally route to the trained `unknown`
+   intent.
 5. **Response generation.** A response is sampled from the predicted intent's
-   `responses`. `time`/`date` intents are answered dynamically.
+   `responses`. The `time` and `date` intents are answered dynamically from the
+   device clock.
+6. **Speech output.** The reply is displayed and, if enabled, spoken via
+   `SpeechSynthesis`.
 
 ## 6. Deployment
 
-The app is fully client-side (HTML + CSS + TensorFlow.js). It is hosted on
-**GitHub Pages** (static hosting, HTTPS, free, always online). The model trains in
-the browser on first visit and is cached in IndexedDB for instant subsequent
-loads. _(See README for exact deployment steps. Insert your live URL here.)_
+The application is fully client-side (HTML + CSS + JavaScript with TensorFlow.js
+loaded from a CDN). It is hosted on **GitHub Pages**, which provides free static
+hosting over HTTPS with an always-available public URL — important because the
+microphone requires HTTPS and the grader's link must never be "asleep". The model
+is trained in the browser on the first visit and cached in IndexedDB, so subsequent
+visits load instantly. Deployment steps are documented in the project README.
 
 ## 7. Results
 
-_Generate the figures with `train_report.py` (see README / Colab) and insert them._
+The figures below are produced by `train_report.py`, which trains the **same
+architecture** on the same dataset with a 80/20 train–test split.
 
-- **Training accuracy:** _<e.g. 100%>_ **Final loss:** _<e.g. 0.05>_
-- **Test/validation accuracy:** _<from train_report.py>_
+**Training accuracy.** The deployed model fits the training data almost perfectly —
+the live application's readout shows **100% training accuracy**, and in Keras the
+final training accuracy was **0.89** with a training loss of **≈0.09** (the small
+gap is because dropout is active during Keras' training-time metric).
 
-**Figures to include:**
-1. Accuracy vs. epochs (`report_assets/accuracy.png`)
-2. Loss vs. epochs (`report_assets/loss.png`)
-3. Confusion matrix (`report_assets/confusion_matrix.png`)
+**Held-out test accuracy.** On the 20% held-out set (26 sentences) the model scored
+**≈0.73** in this run. Because the test set is small, a single misclassification
+shifts the score by about 4%, so this metric is noisy and typically ranges **73–85%
+across runs**; report the value your own run produces.
 
-**Screenshots to include:**
-1. The app recognizing speech (user turn) and replying (bot turn).
-2. The intent + confidence readout under a bot reply.
-3. The GitHub Pages settings showing the live URL.
+**Figure 1 — Accuracy vs. epochs**
 
-_Discuss the results: which intents were classified well, any confusions
-(e.g. overlapping intents like `about_bot` vs `identity_project`), and how the
-confidence threshold handles out-of-scope questions._
+![Accuracy vs epochs](report_assets/accuracy.png)
+
+**Figure 2 — Loss vs. epochs**
+
+![Loss vs epochs](report_assets/loss.png)
+
+**Figure 3 — Confusion matrix (test set)**
+
+![Confusion matrix](report_assets/confusion_matrix.png)
+
+**Discussion.** The confusion matrix shows a strong diagonal: `greeting`, `help`,
+`time`, `date`, `weather`, `mood`, and `creator` were classified perfectly. The
+errors are concentrated among **semantically overlapping intents**, which is exactly
+what we would expect from a bag-of-words model:
+
+- `about_bot` → `creator`: both ask "who/what are you" versus "who made you", and
+  share words like *you*, *your*, *are*.
+- `identity_project` → `help`: "what technology do you use" overlaps with the
+  help/capability questions.
+- `goodbye` → `greeting`: short farewell/greeting phrases share common tokens.
+- The out-of-scope `unknown` class was caught 2 of 4 times; because off-topic input
+  is open-ended, some off-topic sentences leak into a nearby intent and some
+  in-domain phrasing leaks into `unknown`. This is the expected behaviour of a
+  single catch-all class and is mitigated at runtime by the confidence threshold.
+
+Overall the model reliably recognizes clear, in-domain requests and degrades
+gracefully on ambiguous or out-of-scope input.
+
+**Screenshots to add before submission** *(capture from your live site):*
+
+1. _[Screenshot: the app after a **spoken** query — your recognized speech as a user
+   turn and the bot's reply as a bot turn.]_
+2. _[Screenshot: the `intent · confidence` readout under a bot reply.]_
+3. _[Screenshot: the GitHub **Settings → Pages** panel showing your live URL.]_
 
 ## 8. Limitations
 
-- Web Speech API recognition quality varies by browser and accent; best in
-  Chrome/Edge.
-- The dataset is small; the model recognizes the trained intents, not open-domain
-  conversation.
-- Bag-of-words ignores word order (e.g. it can't distinguish "you help me" from
-  "me help you").
+- **No word order or context.** Bag-of-words ignores order, so "you help me" and
+  "me help you" are identical to the model, and casual filler ("okay", "I'm good")
+  is matched to the nearest known intent.
+- **Small dataset.** With 126 samples across 13 intents, the model recognizes its
+  trained intents rather than open-domain conversation, and the held-out metric is
+  noisy.
+- **In-browser training variance.** Each browser trains its own model with some
+  random initialization, so answers to unseen phrases can vary slightly between
+  machines.
+- **No live data.** `time`/`date` use the local device clock (no time-zone lookup),
+  and `weather` is a placeholder rather than a live feed.
+- **Browser support.** Speech recognition works best in Chrome and Edge; a text
+  input is always provided as a fallback.
 
 ## 9. Future Work
 
-- Larger dataset and word embeddings / an LSTM or transformer for better
-  generalization.
-- Live weather/news via external APIs.
-- Multilingual support (change `recognition.lang` and add patterns).
-- Context/slot handling for multi-turn conversations.
+- A larger dataset with **word embeddings and an LSTM or transformer** for
+  order-aware, better-generalizing classification.
+- Live weather/news and true time-zone support via external APIs.
+- Multilingual voice input (change `recognition.lang` and add patterns).
+- Multi-turn context and slot filling for richer conversations.
+- Pre-trained, exported weights so every visitor gets an identical model (removing
+  in-browser training variance).
 
 ## 10. References
 
-- Web Speech API (MDN): SpeechRecognition, SpeechSynthesis.
-- TensorFlow.js documentation.
-- Classic "intents.json" chatbot formulation (bag-of-words + feed-forward network).
+1. Web Speech API — `SpeechRecognition` and `SpeechSynthesis` (MDN Web Docs).
+2. TensorFlow.js documentation — layers, training, and model saving.
+3. The classic *intents.json* chatbot formulation (bag-of-words features with a
+   feed-forward neural network for intent classification).
