@@ -207,4 +207,4 @@ The random seed is fixed, so the figures are reproducible.
 
 ---
 
-*Built as a deep learning lab project on speech recognition and chatbots.*
+*Built as a Speech & Language Processing project on speech recognition and chatbots.*
