@@ -1,0 +1,209 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "hi",
+        "hey",
+        "hello",
+        "hey there",
+        "good morning",
+        "good afternoon",
+        "good evening",
+        "is anyone there",
+        "howdy",
+        "what's up",
+        "hi there"
+      ],
+      "responses": [
+        "Hello! I'm your voice assistant. How can I help you today?",
+        "Hi there! Ask me something using your voice or type below.",
+        "Hey! Great to hear from you. What would you like to know?"
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "bye",
+        "goodbye",
+        "see you later",
+        "see you",
+        "talk to you later",
+        "i am leaving",
+        "have a good day",
+        "catch you later",
+        "that is all",
+        "i have to go now",
+        "i need to go",
+        "i gotta go",
+        "i must leave now"
+      ],
+      "responses": [
+        "Goodbye! Have a wonderful day.",
+        "See you later! Come back anytime.",
+        "Bye for now. Take care!"
+      ]
+    },
+    {
+      "tag": "thanks",
+      "patterns": [
+        "thanks",
+        "thank you",
+        "that is helpful",
+        "thanks a lot",
+        "thank you so much",
+        "awesome thanks",
+        "much appreciated",
+        "cheers"
+      ],
+      "responses": [
+        "You're welcome!",
+        "Happy to help!",
+        "Anytime! Is there anything else you need?"
+      ]
+    },
+    {
+      "tag": "about_bot",
+      "patterns": [
+        "who are you",
+        "what are you",
+        "what is your name",
+        "tell me about yourself",
+        "what can you do",
+        "what is this",
+        "introduce yourself",
+        "are you a robot",
+        "are you human"
+      ],
+      "responses": [
+        "I'm a voice-enabled chatbot built with a deep learning intent-classification model. Speak or type, and I'll try to understand and respond.",
+        "I'm an AI assistant that converts your speech to text, classifies what you meant using a neural network, and replies accordingly."
+      ]
+    },
+    {
+      "tag": "creator",
+      "patterns": [
+        "who made you",
+        "who created you",
+        "who built you",
+        "who is your developer",
+        "who is your creator",
+        "who designed you"
+      ],
+      "responses": [
+        "I was built by a student as a deep learning lab project on speech recognition and chatbots.",
+        "A student developed me for a voice-enabled chatbot assessment."
+      ]
+    },
+    {
+      "tag": "help",
+      "patterns": [
+        "help",
+        "i need help",
+        "can you help me",
+        "what should i do",
+        "how does this work",
+        "how do i use this",
+        "guide me",
+        "i am stuck"
+      ],
+      "responses": [
+        "Sure! Tap the microphone and speak, or type your message in the box. I'll recognize your speech and reply. Try asking about the time, weather, or a joke.",
+        "Press the mic button and talk, or type below. I can greet you, tell jokes, give the time and date, and more."
+      ]
+    },
+    {
+      "tag": "time",
+      "patterns": [
+        "what time is it",
+        "tell me the time",
+        "current time",
+        "what is the time now",
+        "do you know the time",
+        "time please"
+      ],
+      "responses": [
+        "__TIME__"
+      ]
+    },
+    {
+      "tag": "date",
+      "patterns": [
+        "what is the date today",
+        "what day is it",
+        "today's date",
+        "what is today",
+        "tell me the date",
+        "which day is it today"
+      ],
+      "responses": [
+        "__DATE__"
+      ]
+    },
+    {
+      "tag": "weather",
+      "patterns": [
+        "what is the weather",
+        "how is the weather",
+        "is it going to rain",
+        "weather forecast",
+        "is it hot outside",
+        "tell me the weather",
+        "will it rain today"
+      ],
+      "responses": [
+        "I can't fetch live weather in this demo, but you can check a weather service for your area. Want me to explain how to add a weather API?",
+        "Live weather isn't wired up here, but adding a free weather API is a great extension for this project."
+      ]
+    },
+    {
+      "tag": "joke",
+      "patterns": [
+        "tell me a joke",
+        "make me laugh",
+        "say something funny",
+        "do you know any jokes",
+        "another joke",
+        "cheer me up"
+      ],
+      "responses": [
+        "Why did the neural network go to therapy? It had too many deep issues.",
+        "Why do programmers prefer dark mode? Because light attracts bugs.",
+        "I told my computer I needed a break, and now it won't stop sending me KitKat ads."
+      ]
+    },
+    {
+      "tag": "identity_project",
+      "patterns": [
+        "what is this project",
+        "explain this project",
+        "what technology do you use",
+        "how were you trained",
+        "what model do you use",
+        "what dataset do you use",
+        "how do you understand me"
+      ],
+      "responses": [
+        "This project uses the Web Speech API for speech-to-text and a feed-forward neural network (built with TensorFlow.js) trained on a bag-of-words representation of an intents dataset to classify what you mean.",
+        "Your speech is transcribed in the browser, converted into a bag-of-words vector, and passed through a trained neural network that predicts the most likely intent."
+      ]
+    },
+    {
+      "tag": "mood",
+      "patterns": [
+        "how are you",
+        "how are you doing",
+        "how is it going",
+        "are you okay",
+        "how do you feel",
+        "how are you feeling",
+        "how are you feeling today",
+        "how are you today"
+      ],
+      "responses": [
+        "I'm running smoothly, thanks for asking! How are you?",
+        "All systems go! What can I do for you?"
+      ]
+    }
+  ]
+}

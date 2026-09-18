@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoiceBot — speech recognition + neural intent model</title>
+  <meta name="description" content="A voice-enabled chatbot: speech-to-text in the browser plus a TensorFlow.js neural network for intent classification." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="console" aria-live="polite">
+    <header class="head">
+      <div class="head-left">
+        <h1 class="title">VoiceBot</h1>
+        <p class="subtitle">Speech recognition + neural intent classifier</p>
+      </div>
+      <div class="status-readout" id="modelStatus" role="status">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">booting…</span>
+      </div>
+    </header>
+
+    <section class="metrics" id="metrics" aria-label="model information">
+      <span class="metric"><em id="mVocab">–</em> vocab</span>
+      <span class="sep">/</span>
+      <span class="metric"><em id="mClasses">–</em> intents</span>
+      <span class="sep">/</span>
+      <span class="metric"><em id="mSamples">–</em> samples</span>
+      <span class="sep">/</span>
+      <span class="metric"><em id="mAcc">–</em> train acc</span>
+    </section>
+
+    <section class="transcript" id="transcript" aria-label="conversation"></section>
+
+    <section class="stage">
+      <canvas class="wave" id="wave" width="600" height="72" aria-hidden="true"></canvas>
+
+      <div class="controls">
+        <button class="mic" id="micBtn" aria-label="Tap to speak" title="Tap to speak">
+          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+          </svg>
+          <span class="ring" id="ring"></span>
+        </button>
+        <p class="hint" id="hint">Tap the mic and speak</p>
+      </div>
+
+      <form class="typerow" id="typeForm" autocomplete="off">
+        <input class="typein" id="typeIn" type="text" placeholder="…or type a message and press enter" aria-label="Type a message" />
+        <button class="send" id="sendBtn" type="submit">Send</button>
+      </form>
+
+      <label class="tts-toggle">
+        <input type="checkbox" id="ttsToggle" checked />
+        <span>Speak replies aloud</span>
+      </label>
+    </section>
+  </main>
+
+  <!-- TensorFlow.js (works on GitHub Pages and in published pages) -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
