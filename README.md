@@ -207,13 +207,4 @@ The random seed is fixed, so the figures are reproducible.
 
 ---
 
-## Submission checklist
-
-- [ ] Live GitHub Pages link works in Chrome (speech + typing both respond)
-- [ ] Screenshot showing **voice input** working (spoken words → text → reply)
-- [ ] Source code pushed to a public GitHub repo
-- [ ] Report completed (`report.md`) with dataset, architecture, methodology, results, and the figures
-
----
-
 *Built as a deep learning lab project on speech recognition and chatbots.*
